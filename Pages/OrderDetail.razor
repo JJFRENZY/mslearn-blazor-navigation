@@ -1,0 +1,62 @@
+@page "/myorders/{orderId:int}"
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+
+<div class="main">
+    @if (invalidOrder)
+    {
+        <h2>Order not found</h2>
+        <p>We're sorry but this order no longer exists.</p>
+    }
+    else if (orderWithStatus == null)
+    {
+        <h2>Loading...</h2>
+    }
+    else
+    {
+        <div class="track-order">
+
+            <h2>
+                Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()
+            </h2>
+
+            <p>
+                Status: <strong>@orderWithStatus.StatusText</strong>
+            </p>
+
+            @foreach (var pizza in orderWithStatus.Order.Pizzas)
+            {
+                <p>
+                    <strong>
+                        @(pizza.Size)" @pizza.Special.Name
+                        (£@pizza.GetFormattedTotalPrice())
+                    </strong>
+                </p>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public int OrderId { get; set; }
+
+    OrderWithStatus orderWithStatus;
+    bool invalidOrder = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            orderWithStatus =
+                await HttpClient.GetFromJsonAsync<OrderWithStatus>(
+                    $"{NavigationManager.BaseUri}orders/{OrderId}");
+        }
+        catch
+        {
+            invalidOrder = true;
+        }
+    }
+}

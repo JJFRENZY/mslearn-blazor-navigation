@@ -1,0 +1,15 @@
+@page "/favoritepizza/{favorite}"
+@inject NavigationManager NavManager
+
+<h1>Choose a Pizza</h1>
+
+<p>Your favorite pizza is: <strong>@Favorite</strong></p>
+
+<p>
+    <NavLink href="/" class="btn btn-primary">Back to Menu</NavLink>
+</p>
+
+@code {
+    [Parameter]
+    public string Favorite { get; set; }
+}
